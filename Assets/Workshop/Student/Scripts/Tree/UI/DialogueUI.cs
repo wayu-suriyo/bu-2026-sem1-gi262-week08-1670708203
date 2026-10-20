@@ -10,31 +10,39 @@ public class DialogueUI : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI npcText;
     public Transform choiceContainer;
-    public Button choiceButtonPrefab; // ลาก Prefab ปุ่มตัวเลือกมาใส่
+    public Button choiceButtonPrefab; // ๏ฟฝาก Prefab ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
     public GameObject closeButtonDialogue;
     private DialogueSequen InteractNpcSequen;
 
-    // เก็บปุ่มที่ถูกสร้างขึ้น เพื่อนำไปทำลาย/ซ่อนในภายหลัง
+    // ๏ฟฝ็บป๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝูก๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝอน๏ฟฝไปท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ/๏ฟฝ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง
     private List<Button> activeButtons = new List<Button>();
 
     public void Setup(DialogueSequen sequen)
     {
         //1. Set Dialogue Sequen
-
+        this.InteractNpcSequen = sequen;
+        DialogueNode currentnode = InteractNpcSequen.tree.root;
+        ShowDialogue(currentnode);
         //Show UI
+        dialoguePanel.SetActive(true);
         gameObject.SetActive(true);
         closeButtonDialogue.SetActive(false);
     }
 
     public void ShowDialogue(DialogueNode node)
     {
-        // 2. set ให้เป็น โหนดปัจจุบัน
-
-        // 3. แสดงข้อความของ NPC
-
-        // 4. ล้างปุ่มตัวเลือกเก่า
-
-        // 5. สร้างปุ่มตัวเลือกใหม่ตาม nexts
+        // 2. set  หนัจุบัน
+        InteractNpcSequen.currentNode = node;
+        // 3. สดอคอง NPC
+        npcText.text = node.text;
+        // 4. างอก
+        ClearChoices();       
+        // 5. างอก nexts
+        var chois = new List<string>(node.nexts.Keys);
+        for (int i = 0; i < chois.Count; i++) {
+            string choiceText = chois[i];
+            CreateChoiceButton(choiceText, i);
+        }
    
     }
 
@@ -42,11 +50,11 @@ public class DialogueUI : MonoBehaviour
     {
         Button newButton = Instantiate(choiceButtonPrefab, choiceContainer);
 
-        // ตั้งค่าข้อความบนปุ่ม
+        // ๏ฟฝ๏ฟฝ้งค๏ฟฝาข๏ฟฝอค๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         newButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
 
-        // เพิ่ม Listener เมื่อกดปุ่ม
-        // ใช้ Lambda Expression เพื่อส่ง index กลับไปให้ DialogueManager
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Listener ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
+        // ๏ฟฝ๏ฟฝ Lambda Expression ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ index ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ DialogueManager
         newButton.onClick.AddListener(() => OnChoiceSelected(index));
 
         activeButtons.Add(newButton);
@@ -63,7 +71,7 @@ public class DialogueUI : MonoBehaviour
 
     private void OnChoiceSelected(int index)
     {
-        // ส่ง index ของตัวเลือกที่ผู้เล่นเลือกกลับไปให้ DialogueManager จัดการ
+        // ๏ฟฝ๏ฟฝ index ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอก๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ DialogueManager ๏ฟฝัด๏ฟฝ๏ฟฝ๏ฟฝ
         InteractNpcSequen.SelectChoice(index);
     }
     public void ShowCloseButtonDialog() {
